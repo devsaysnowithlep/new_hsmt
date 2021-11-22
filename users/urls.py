@@ -15,6 +15,6 @@ urlpatterns = [
 
     path('api/login/', TokenObtainPairView.as_view(), name='user_login'),
     path('api/login/refresh/', TokenRefreshView.as_view(), name='user_refresh'),
-    # path('api/department/change-pwd/', views.department_change_pwd, name='api_department_change_pwd'),
+    path('api/department/change-pwd/', views.DepartmentChangePwd.as_view(), name='department_change_pwd'),
     path('api/department/login/', views.DepartmentLogin.as_view(), name='department_login'),
 ]

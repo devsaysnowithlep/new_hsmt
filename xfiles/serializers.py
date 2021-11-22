@@ -60,18 +60,5 @@ class XFileLogSerializer(serializers.ModelSerializer):
 class XFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = XFile
-        fields = ('id', 'status', 'get_status_display', 'code', 'description', 'type', 'targets', 'department', 'editors', 'date_created', 'contents', 'attack_logs', 'submitted_by', 'approved_by', 'date_submitted', 'date_approved')
-        read_only_fields = ('status', 'get_status_display', 'date_created', 'contents', 'attacklogs', 'submitted_by', 'approved_by', 'date_submitted', 'date_approved')
-
-# class XFileDetailSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = XFile
-#         fields = ('id', 'code', 'contents')
-# 
-# class XFileFullSerializer(serializers.ModelSerializer):
-#     contents = ContentSerializer(many=True)
-#     attack_logs = AttackLogSerializer(many=True)
-#     class Meta:
-#         model = XFile
-#         fields = ('code', 'description', 'targets', 'contents', 'attack_logs')
-
+        fields = ('id', 'status', 'get_status_display', 'code', 'description', 'type', 'targets', 'department', 'editors', 'date_created', 'contents', 'attack_logs', 'xfile_logs', 'submitted_by', 'approved_by', 'date_submitted', 'date_approved')
+        read_only_fields = ('status', 'get_status_display', 'date_created', 'contents', 'attack_logs', 'xfile_logs', 'submitted_by', 'approved_by', 'date_submitted', 'date_approved')

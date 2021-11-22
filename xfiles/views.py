@@ -4,8 +4,6 @@ from rest_framework.response import Response
 
 from django.shortcuts import get_object_or_404, HttpResponse
 
-from django_fsm import has_transition_perm
-
 from xfiles.serializers import *
 from xfiles.permissions import *
 from users.permissions import *
@@ -221,4 +219,3 @@ class XFileCreateChangeView(APIView):
         xfile.save()
         # notify(actor=user, target=xfile, verb=VERB.SEND.label, notify_to=list(xfile.checkers.all()))
         return Response({'detail': 'Yêu cầu sửa thêm thành công'}, status.HTTP_200_OK)
-   

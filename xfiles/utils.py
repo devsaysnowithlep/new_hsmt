@@ -32,13 +32,34 @@ class AESCipher(object):
         return s[:-ord(s[len(s)-1:])]
 
 def encode(raw, key):
-    if raw == '':
+    if not raw:
         return raw
     encoder = AESCipher(key)
     return encoder.encrypt(raw).decode('utf-8')
 
 def decode(cipher, key):
-    if cipher == '':
+    if not cipher:
         return cipher
     decoder = AESCipher(key)
     return decoder.decrypt(cipher)
+
+def change_pwd_for_xfile(xfile, old_key, new_key):
+    for content in xfile.contents.all():
+        for detail in content.details.all():
+            detail.text = encode(decode(detail.text, old_key), new_key)
+            detail.save()
+
+    for attack_log in xfile.attack_logs:
+        attack_log.process = encode(decode(attack_log.process, old_key), new_key)
+        attack_log.result = encode(decode(attack_log.result, old_key), new_key)
+        attack_log.save()
+
+    for xfile_log in xfile.xfile_logs:
+        xfile_log.contents = encode(decode(xfile_log.contents, old_key), new_key)
+        xfile_log.attack_logs = encode(decode(xfile_log.attack_logs, old_key), new_key)
+        xfile_log.save()
+
+def change_pwd_for_xfile_department(department_id, old_key, new_key):
+    xfiles = set(XFile.objects.filter(department__id=department_id))
+    for xfile in xfiles:
+        change_pwd_for_xfile(xfile, old_key, new_key)

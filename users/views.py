@@ -9,8 +9,9 @@ from django.contrib.auth.hashers import check_password
 import hmac, hashlib, base64, json
 
 from new_hsmt import settings
-from .serializers import *
-from .permissions import *
+from xfiles.utils import change_pwd_for_xfile_department
+from users.serializers import *
+from users.permissions import *
 
 # REST API
 class DepartmentListCreate(generics.ListCreateAPIView):
@@ -44,10 +45,29 @@ class DepartmentLogin(APIView):
             }
             token = base64.urlsafe_b64encode(bytes(json.dumps(token_data), 'latin-1'))
             return Response({'access': token}, status=status.HTTP_200_OK)
-        return Response('Sai mật khẩu', status=status.HTTP_400_BAD_REQUEST)
+        return Response({'detail': 'Sai mật khẩu'}, status=status.HTTP_400_BAD_REQUEST)
 
 class DepartmentChangePwd(APIView):
     '''Thay đổi mật khẩu của phòng'''
+    ermission_classes = [IsAuthenticated, IsTruongphong]
+    http_method_names = ['post']
+
+    def post(self, request, format=None):
+        '''fields=('department', 'old_password', 'new_password')'''
+        department_id = request.data.get('department')
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+        department = get_object_or_404(Department, id=department_id)
+
+        # chỉ trưởng phòng của phòng tương ứng được đổi
+        if request.user.department != department:
+            return Response({'detail': 'Không thể đổi mật khẩu của phòng khác'}, status=status.HTTP_403_FORBIDDEN)
+        if check_password(old_password, department.password):
+            department.password = make_password(new_password)
+            department.save()
+            change_pwd_for_xfile_department(department_id, old_password, new_password)
+            return Response({'detail': 'Đổi mật khẩu thành công'}, status= status.HTTP_200_OK)
+        return Response({'detail': 'Sai mật khẩu'}, status=status.HTTP_400_BAD_REQUEST)
 
 class PositionListCreate(generics.ListCreateAPIView):
     '''Liệt kê và tạo mới chức vụ'''

@@ -2,5 +2,4 @@ from django.contrib import admin
 from .models import *
 
 # Register your models here.
-admin.site.register((Detail, XFileType, XFile, Content, ExContent))
-# admin.site.register(Detail)
+admin.site.register((Detail, XFileType, XFile, Content, ExContent, XFileLog, Target))

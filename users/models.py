@@ -1,17 +1,36 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.validators import UnicodeUsernameValidator
 
 
 # Create your models here.
+class DepartmentManager(models.Manager):
+    def create_department(self, slug, password, name, **kwargs):
+        department = self.model(slug=slug, name=name, **kwargs)
+        department.password = make_password(password)
+        department.save(using=self._db)
+        return department
+
+class Department(models.Model):
+    '''
+    Biểu diễn các phòng trong cơ quan
+    '''
+    name = models.TextField()
+    slug = models.SlugField(max_length=100, unique=True)
+    password = models.CharField(max_length=150)
+    objects = DepartmentManager()
+
+    def __str__(self):
+        return self.name
 
 class Position(models.Model):
     '''
     Biểu diễn chức vụ trong tổ chức
     '''
     name = models.TextField()
-    alias = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=100, unique=True)
 
     def __str__(self):
         return self.name
@@ -44,7 +63,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(blank=True)
     layout_config = models.TextField(blank=True)
 
-    # department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True, blank=True)
+    department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True, blank=True)
     position = models.ForeignKey(Position, on_delete=models.CASCADE, null=True, blank=True)
     
     def __str__(self):

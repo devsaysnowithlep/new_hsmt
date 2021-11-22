@@ -40,13 +40,38 @@ class XFileTypeSerializer(serializers.ModelSerializer):
             ExContent.objects.create(xfile_type=instance, **ex_content)
         return instance
 
+class TargetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Target
+        fields = ('id', 'name', 'get_type_display', 'description', 'type')
+        read_only_fields = ('get_type_display', )
+
+class AttackLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AttackLog
+        fields = ('id', 'timestamp', 'process', 'result', 'attacker')
+
+class XFileLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = XFileLog
+        fields = ('id', 'timestamp', 'action', 'performer', 'contents', 'attack_logs', 'get_action_display')
+        read_only_fields = ('timestamp', 'performer', 'get_action_display')
+
 class XFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = XFile
-        fields = ('id', 'code', 'description', 'type', 'date_created', 'contents')
-        read_only_fields = ('contents',)
+        fields = ('id', 'status', 'get_status_display', 'code', 'description', 'type', 'targets', 'department', 'editors', 'date_created', 'contents', 'attack_logs', 'submitted_by', 'approved_by', 'date_submitted', 'date_approved')
+        read_only_fields = ('status', 'get_status_display', 'date_created', 'contents', 'attacklogs', 'submitted_by', 'approved_by', 'date_submitted', 'date_approved')
 
-class XFileDetailSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = XFile
-        fields = ('id', 'code', 'contents')
+# class XFileDetailSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = XFile
+#         fields = ('id', 'code', 'contents')
+# 
+# class XFileFullSerializer(serializers.ModelSerializer):
+#     contents = ContentSerializer(many=True)
+#     attack_logs = AttackLogSerializer(many=True)
+#     class Meta:
+#         model = XFile
+#         fields = ('code', 'description', 'targets', 'contents', 'attack_logs')
+
